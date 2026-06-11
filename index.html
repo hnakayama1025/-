@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -11,6 +12,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="就活">
 <meta name="theme-color" content="#0A0A0C">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
 
 <style>
 :root{
@@ -146,13 +149,20 @@ textarea{resize:vertical;min-height:60px}
 /* フェーズ操作ボタン */
 .cops{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
 .bignext{flex:2 1 150px;padding:12px;border:none;cursor:pointer;font-size:13px;font-weight:900;letter-spacing:.08em;
-  background:linear-gradient(135deg,var(--green),#2FA875);color:#08110C}
+  background:linear-gradient(135deg,var(--pink),#8E5CF0 55%,var(--neon));color:#fff;
+  box-shadow:0 0 18px rgba(255,45,120,.18)}
 .bigfail{flex:1 1 110px;padding:12px;cursor:pointer;font-size:12.5px;font-weight:800;letter-spacing:.05em;
-  background:transparent;border:1px solid var(--amber);color:var(--amber)}
+  background:transparent;border:1px solid var(--line);color:var(--sub)}
 .bigoffer{flex:2 1 150px;padding:12px;border:none;cursor:pointer;font-size:13px;font-weight:900;letter-spacing:.08em;
   background:linear-gradient(135deg,var(--neon),#1B9CC4);color:#04141A}
 .miniop{font-size:11.5px;font-weight:800;padding:10px 13px;cursor:pointer;letter-spacing:.08em;
   background:transparent;border:1px solid var(--line);color:var(--sub)}
+.miniop.danger{border-color:var(--pink);color:var(--pink);background:rgba(255,45,120,.1)}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:99;
+  background:var(--panel2);border:1px solid var(--pink);color:#fff;
+  font-size:13px;font-weight:800;letter-spacing:.05em;padding:12px 22px;
+  box-shadow:0 0 24px rgba(255,45,120,.25);animation:toastIn .2s ease}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 .empty{text-align:center;color:var(--sub);border:1px dashed var(--line);padding:48px 16px;font-size:13.5px;letter-spacing:.05em}
 
 /* ===== カレンダー ===== */
@@ -180,6 +190,7 @@ textarea{resize:vertical;min-height:60px}
 .tools{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
 .tool{flex:1 1 160px;padding:13px;font-size:11.5px;font-weight:800;cursor:pointer;letter-spacing:.12em;
   border:1px solid var(--pink);background:transparent;color:var(--pink)}
+.tool.blue{border-color:var(--neon);color:var(--neon)}
 .note{font-size:11px;color:var(--sub);margin-top:12px;line-height:1.8}
 .hide{display:none}
 </style>
@@ -261,7 +272,7 @@ textarea{resize:vertical;min-height:60px}
   <!-- ============ ツール ============ -->
   <div class="tools">
     <button class="tool" id="btnNotif">🔔 通知を有効にする</button>
-    <button class="tool" id="btnIcs">📅 カレンダーに書き出す</button>
+    <button class="tool blue" id="btnIcs">📅 カレンダーに書き出す</button>
   </div>
   <p class="note">
     データはこの端末のブラウザ内にのみ保存されます。<br>
@@ -276,8 +287,8 @@ textarea{resize:vertical;min-height:60px}
 const KEY="shukatsu-data", NKEY="shukatsu-notified";
 const ALL_PHASES=["ES","Webテスト","GD","面接"];
 const OFFER="合格・内定", REJECT="不合格", WAIT="結果待ち";
-const STEP_COLORS={"ES作成中":"var(--amber)","ES提出済":"var(--teal)","Webテスト":"var(--blue)",
-  "GD":"var(--purple)","面接":"var(--orange)","結果待ち":"var(--sub)",
+const STEP_COLORS={"ES作成中":"#FF5C8F","ES提出済":"#F060B8","Webテスト":"#BB6CE8",
+  "GD":"#8E84F0","面接":"#5BB4F5","結果待ち":"#3FD9E8",
   "合格・内定":"var(--neon)","不合格":"var(--gray)"};
 
 let mem={};
@@ -318,8 +329,8 @@ function dueInfo(n){
   if(n<0)return{t:"期限切れ",c:"var(--gray)"};
   if(n===0)return{t:"今日",c:"var(--pink)"};
   if(n<=3)return{t:"あと"+n+"日",c:"var(--pink)"};
-  if(n<=7)return{t:"あと"+n+"日",c:"var(--amber)"};
-  return{t:"あと"+n+"日",c:"var(--blue)"}}
+  if(n<=7)return{t:"あと"+n+"日",c:"#A77FF2"};
+  return{t:"あと"+n+"日",c:"#4FC7F0"}}
 function isFin(i){return i.status===OFFER||i.status===REJECT}
 function progress(i){
   if(i.status===OFFER)return 100;
@@ -377,22 +388,27 @@ function renderCards(){
     const pct=progress(i);
 
     // フェーズ操作ボタン
+    const delBtn=pendingDel===i.id
+      ?`<button class="miniop danger" style="margin-left:auto" onclick="removeItem('${i.id}')">本当に削除?</button>`
+      :`<button class="miniop" style="margin-left:auto" onclick="removeItem('${i.id}')">削除</button>`;
     let ops="";
     if(i.status===OFFER||i.status===REJECT){
       ops=`<button class="miniop" onclick="goBack('${i.id}')">戻る</button>
            <button class="miniop" onclick="startEdit('${i.id}')">編集</button>
-           <button class="miniop" style="margin-left:auto" onclick="removeItem('${i.id}')">削除</button>`;
+           ${delBtn}`;
     }else if(i.status===WAIT){
       ops=`<button class="bigoffer" onclick="setStep('${i.id}','${OFFER}')">🎉 合格・内定</button>
            <button class="bigfail" onclick="setStep('${i.id}','${REJECT}')">不合格</button>
            <button class="miniop" onclick="goBack('${i.id}')">戻る</button>
-           <button class="miniop" onclick="startEdit('${i.id}')">編集</button>`;
+           <button class="miniop" onclick="startEdit('${i.id}')">編集</button>
+           ${delBtn}`;
     }else{
       const failLabel=(i.status==="ES作成中"||i.status==="ES提出済")?"ES不合格":i.status+"不合格";
       ops=`<button class="bignext" onclick="advance('${i.id}')">次へ: ${esc(nextStep)}</button>
            <button class="bigfail" onclick="setStep('${i.id}','${REJECT}')">${failLabel}</button>
            <button class="miniop" onclick="goBack('${i.id}')" ${si===0?"disabled style='opacity:.3'":""}>戻る</button>
-           <button class="miniop" onclick="startEdit('${i.id}')">編集</button>`;
+           <button class="miniop" onclick="startEdit('${i.id}')">編集</button>
+           ${delBtn}`;
     }
 
     return `<div class="${cls}">
@@ -439,11 +455,26 @@ window.goBack=id=>{
   save();renderAll()};
 window.setStep=(id,s)=>{
   const i=items.find(x=>x.id===id);if(i){i.status=s;save();renderAll()}};
-window.removeItem=id=>{if(confirm("削除しますか?")){items=items.filter(x=>x.id!==id);save();renderAll()}};
+let pendingDel=null,pendingTimer=null;
+window.removeItem=id=>{
+  if(pendingDel===id){
+    clearTimeout(pendingTimer);pendingDel=null;
+    items=items.filter(x=>x.id!==id);save();renderAll();showToast("削除しました");return}
+  pendingDel=id;renderCards();
+  pendingTimer=setTimeout(()=>{pendingDel=null;renderCards()},3000)};
+function showToast(msg){
+  document.querySelectorAll(".toast").forEach(t=>t.remove());
+  const t=document.createElement("div");t.className="toast";t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
 window.copyId=async id=>{
   const i=items.find(x=>x.id===id);if(!i||!i.mpid)return;
-  try{await navigator.clipboard.writeText(i.mpid);alert("IDをコピーしました")}
-  catch(e){prompt("コピーできない場合は手動で選択してください:",i.mpid)}};
+  try{await navigator.clipboard.writeText(i.mpid);showToast("IDをコピーしました")}
+  catch(e){
+    const ta=document.createElement("textarea");ta.value=i.mpid;
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");showToast("IDをコピーしました")}
+    catch(e2){showToast("ID: "+i.mpid)}
+    ta.remove()}};
 
 // ================= フォーム =================
 function renderPhaseToggles(){
@@ -573,10 +604,10 @@ function notifyUrgent(){
   });
   lsSet(NKEY,JSON.stringify(seen))}
 document.getElementById("btnNotif").onclick=async()=>{
-  if(!("Notification" in window)){alert("この環境は通知に未対応です。iPhoneの場合は「ホーム画面に追加」してから開いてください(iOS16.4以降)。");return}
+  if(!("Notification" in window)){showToast("この環境は通知に未対応です(ホーム画面に追加後に開いてください)");return}
   const p=await Notification.requestPermission();
-  if(p==="granted"){document.getElementById("btnNotif").textContent="🔔 通知:オン";notifyUrgent()}
-  else alert("通知が許可されませんでした。設定アプリから許可できます。")};
+  if(p==="granted"){document.getElementById("btnNotif").textContent="🔔 通知:オン";notifyUrgent();showToast("通知をオンにしました")}
+  else showToast("通知が許可されませんでした(設定アプリから変更できます)")};
 setInterval(notifyUrgent,30*60*1000);
 
 // ================= ics書き出し =================
@@ -601,7 +632,7 @@ document.getElementById("btnIcs").onclick=()=>{
         "BEGIN:VALARM","TRIGGER:-P1D","ACTION:DISPLAY","DESCRIPTION:明日:"+i.company,"END:VALARM",
         "BEGIN:VALARM","TRIGGER:-PT3H","ACTION:DISPLAY","DESCRIPTION:本日:"+i.company,"END:VALARM",
         "END:VEVENT")})});
-  if(!count){alert("書き出せる締切・予定がありません");return}
+  if(!count){showToast("書き出せる締切・予定がありません");return}
   lines.push("END:VCALENDAR");
   const blob=new Blob([lines.join("\r\n")],{type:"text/calendar"});
   const a=document.createElement("a");
