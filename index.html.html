@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>就活</title>
+
+<!-- iPhoneホーム画面アプリ化用 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="就活">
+<meta name="theme-color" content="#0A0A0C">
+
+<style>
+:root{
+  --bg:#0A0A0C;
+  --panel:#121215;
+  --panel2:#1A1A1F;
+  --line:#2B2B31;
+  --text:#FFFFFF;
+  --sub:#9A9AA3;
+  --pink:#FF2D78;
+  --neon:#2DE0FF;
+  --amber:#E0A848;
+  --green:#4DC98E;
+  --blue:#5E9BE0;
+  --purple:#A98BE0;
+  --teal:#6ED4C0;
+  --orange:#E88A6A;
+  --gray:#5C5C66;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;min-height:100vh;color:var(--text);
+  font-family:'Hiragino Sans','Noto Sans JP',sans-serif;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle at 88% 4%, rgba(255,45,120,.10), transparent 38%),
+    radial-gradient(circle at 5% 70%, rgba(255,45,120,.05), transparent 30%),
+    linear-gradient(115deg, transparent 49.86%, rgba(255,255,255,.045) 49.86%, rgba(255,255,255,.045) 50.14%, transparent 50.14%),
+    linear-gradient(62deg, transparent 49.88%, rgba(255,255,255,.035) 49.88%, rgba(255,255,255,.035) 50.12%, transparent 50.12%),
+    linear-gradient(155deg, transparent 49.9%, rgba(255,255,255,.03) 49.9%, rgba(255,255,255,.03) 50.1%, transparent 50.1%);
+  background-size:100% 100%,100% 100%,300px 300px,380px 380px,460px 460px;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}
+.wrap{max-width:560px;margin:0 auto;padding:24px 16px 120px}
+
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:.35em;color:var(--pink);
+  display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--pink)}
+
+/* ===== ヘッダー ===== */
+header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px}
+h1{margin:4px 0 0;font-size:34px;font-weight:900;letter-spacing:.06em;line-height:1}
+h1 .dot{color:var(--pink)}
+.tagline{font-size:9.5px;color:var(--sub);letter-spacing:.45em;margin-top:6px;font-weight:700}
+.today{text-align:right}
+.today .l{font-size:9px;color:var(--pink);letter-spacing:.3em;font-weight:800}
+.today .d{font-size:18px;font-weight:900;letter-spacing:.05em}
+
+/* ===== サマリー ===== */
+.stats{display:flex;gap:8px;margin-bottom:14px}
+.stat{flex:1;background:var(--panel);border:1px solid var(--line);padding:11px 12px}
+.stat .l{font-size:9.5px;color:var(--sub);letter-spacing:.18em;font-weight:800}
+.stat .n{font-size:26px;font-weight:900;margin-top:2px;letter-spacing:.02em}
+.stat.urgent{border-color:rgba(255,45,120,.5)}
+.stat.urgent .n{color:var(--pink)}
+.stat.offer .n{color:var(--neon);text-shadow:0 0 14px rgba(45,224,255,.45)}
+
+/* ===== タブ・検索 ===== */
+.viewtabs{display:flex;border:1px solid var(--line);overflow:hidden;margin-bottom:12px}
+.viewtabs button{flex:1;padding:12px;font-size:12px;font-weight:800;border:none;letter-spacing:.25em;
+  background:var(--panel);color:var(--sub);cursor:pointer}
+.viewtabs button.on{background:var(--pink);color:#fff}
+input,select,textarea{
+  width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:0;
+  background:var(--panel2);color:var(--text);font-size:16px;font-family:inherit;outline:none;
+  -webkit-appearance:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--pink)}
+textarea{resize:vertical;min-height:60px}
+.search{margin-bottom:10px}
+.filters{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.chip{padding:8px 13px;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;
+  border:1px solid var(--line);background:transparent;color:var(--sub)}
+.chip.on{border-color:var(--pink);color:var(--pink)}
+.addrow{display:flex;justify-content:flex-end;margin-bottom:14px}
+.addbtn{padding:10px 20px;border:none;cursor:pointer;
+  font-size:13px;font-weight:900;letter-spacing:.1em;background:var(--pink);color:#fff}
+
+/* ===== アラート帯 ===== */
+.alertbar{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  border:1px solid var(--pink);border-left:4px solid var(--pink);background:rgba(255,45,120,.08);
+  padding:12px 14px;margin-bottom:13px;font-size:13.5px;font-weight:800}
+.alertbar .due{color:var(--pink);white-space:nowrap;letter-spacing:.05em}
+
+/* ===== フォーム ===== */
+.form{background:var(--panel);border:1px solid var(--line);padding:16px;margin-bottom:16px}
+.form h2{margin:0 0 14px;font-size:11px;color:var(--pink);letter-spacing:.3em;font-weight:800}
+.row{display:flex;gap:9px;margin-bottom:10px;flex-wrap:wrap}
+.f{flex:1 1 130px}
+.f label{display:block;font-size:9.5px;color:var(--sub);letter-spacing:.2em;margin-bottom:5px;font-weight:800}
+.phases{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.phase{padding:12px;font-size:13px;font-weight:800;letter-spacing:.1em;cursor:pointer;
+  border:1px solid var(--line);background:var(--panel2);color:var(--sub)}
+.phase.on{border-color:var(--pink);color:#fff;background:rgba(255,45,120,.12)}
+.submit{width:100%;padding:14px;border:none;font-size:14px;font-weight:900;
+  letter-spacing:.25em;background:var(--pink);color:#fff;cursor:pointer;margin-top:4px}
+
+/* ===== カード ===== */
+.cards{display:flex;flex-direction:column;gap:11px}
+.card{background:var(--panel);border:1px solid var(--line);padding:15px 16px;position:relative}
+.card.urgent{border-color:rgba(255,45,120,.6);box-shadow:0 0 22px rgba(255,45,120,.10)}
+.card.offer{border-color:rgba(45,224,255,.6);box-shadow:0 0 22px rgba(45,224,255,.12)}
+.card.rejected{opacity:.4}
+.cnum{font-size:10px;font-weight:800;letter-spacing:.25em;color:var(--pink);margin-bottom:6px}
+.chead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.cname{font-size:17px;font-weight:900;letter-spacing:.02em}
+.cmeta{font-size:11.5px;color:var(--sub);margin-top:3px;letter-spacing:.08em;font-weight:600}
+.badge{flex-shrink:0;font-size:10.5px;font-weight:800;padding:5px 11px;border:1px solid;white-space:nowrap;letter-spacing:.08em}
+.statusrow{display:flex;align-items:center;gap:8px;margin-top:10px}
+
+/* 進捗バー */
+.prog{margin-top:11px}
+.proghead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.proghead .l{font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--pink)}
+.proghead .p{font-size:11px;font-weight:800;color:var(--sub)}
+.bar{height:4px;background:var(--panel2);border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--neon));transition:width .3s}
+
+/* 締切/予定の2枠 */
+.twobox{display:flex;gap:8px;margin-top:11px}
+.box{flex:1;border:1px solid var(--line);background:var(--panel2);padding:10px 12px}
+.box .l{font-size:9.5px;color:var(--sub);letter-spacing:.2em;font-weight:800}
+.box .d{font-size:18px;font-weight:900;margin-top:3px;letter-spacing:.03em}
+.box .pill{display:inline-block;font-size:10px;font-weight:800;border:1px solid;padding:2px 9px;margin-top:5px;letter-spacing:.06em}
+.cmemo{font-size:12.5px;color:var(--sub);margin-top:10px;line-height:1.6;border:1px solid var(--line);background:var(--panel2);padding:9px 12px}
+
+/* マイページ情報 */
+.mypage{display:flex;align-items:center;gap:8px;margin-top:10px;border:1px solid var(--line);background:var(--panel2);padding:8px 12px}
+.mypage .l{font-size:9.5px;color:var(--sub);letter-spacing:.2em;font-weight:800;flex-shrink:0}
+.mypage .id{font-size:12px;color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.mypage a,.mypage button{flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.08em;padding:7px 12px;
+  cursor:pointer;text-decoration:none;background:transparent;border:1px solid var(--neon);color:var(--neon)}
+
+/* フェーズ操作ボタン */
+.cops{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.bignext{flex:2 1 150px;padding:12px;border:none;cursor:pointer;font-size:13px;font-weight:900;letter-spacing:.08em;
+  background:linear-gradient(135deg,var(--green),#2FA875);color:#08110C}
+.bigfail{flex:1 1 110px;padding:12px;cursor:pointer;font-size:12.5px;font-weight:800;letter-spacing:.05em;
+  background:transparent;border:1px solid var(--amber);color:var(--amber)}
+.bigoffer{flex:2 1 150px;padding:12px;border:none;cursor:pointer;font-size:13px;font-weight:900;letter-spacing:.08em;
+  background:linear-gradient(135deg,var(--neon),#1B9CC4);color:#04141A}
+.miniop{font-size:11.5px;font-weight:800;padding:10px 13px;cursor:pointer;letter-spacing:.08em;
+  background:transparent;border:1px solid var(--line);color:var(--sub)}
+.empty{text-align:center;color:var(--sub);border:1px dashed var(--line);padding:48px 16px;font-size:13.5px;letter-spacing:.05em}
+
+/* ===== カレンダー ===== */
+.cal{background:var(--panel);border:1px solid var(--line);padding:14px}
+.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.calhead .m{font-size:16px;font-weight:900;letter-spacing:.15em}
+.calnav{border:1px solid var(--line);background:transparent;color:var(--pink);
+  width:38px;height:38px;font-size:16px;cursor:pointer}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.dow{text-align:center;font-size:9.5px;color:var(--sub);padding:5px 0;letter-spacing:.15em;font-weight:800}
+.day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;border:1px solid transparent;background:transparent;
+  color:var(--text);font-family:inherit;padding:0;font-weight:600}
+.day.dim{color:#3E3E46}
+.day.today{border-color:var(--pink);font-weight:900;color:var(--pink)}
+.day.sel{background:var(--panel2);border-color:var(--pink)}
+.dots{display:flex;gap:2px;margin-top:2px;height:5px}
+.dot{width:5px;height:5px;border-radius:50%}
+.daylist{margin-top:14px}
+.daylist h3{font-size:10.5px;color:var(--pink);letter-spacing:.3em;margin:0 0 9px;font-weight:800}
+.legend{display:flex;gap:14px;margin-top:10px;font-size:10px;color:var(--sub);font-weight:700;letter-spacing:.08em}
+.legend span{display:flex;align-items:center;gap:5px}
+
+/* ===== ツール ===== */
+.tools{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+.tool{flex:1 1 160px;padding:13px;font-size:11.5px;font-weight:800;cursor:pointer;letter-spacing:.12em;
+  border:1px solid var(--pink);background:transparent;color:var(--pink)}
+.note{font-size:11px;color:var(--sub);margin-top:12px;line-height:1.8}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="eyebrow">SHUKATSU TRACKER</div>
+      <h1>就活<span class="dot">.</span></h1>
+      <div class="tagline">DEADLINE & SELECTION</div>
+    </div>
+    <div class="today"><div class="l">TODAY</div><div class="d" id="todayLabel"></div></div>
+  </header>
+
+  <div class="stats">
+    <div class="stat active"><div class="l">進行中</div><div class="n" id="stActive">0</div></div>
+    <div class="stat urgent"><div class="l">締切間近</div><div class="n" id="stUrgent">0</div></div>
+    <div class="stat offer"><div class="l">合格/内定</div><div class="n" id="stOffer">0</div></div>
+  </div>
+
+  <div class="viewtabs">
+    <button id="tabList" class="on">LIST</button>
+    <button id="tabCal">CALENDAR</button>
+  </div>
+
+  <!-- ============ 一覧ビュー ============ -->
+  <div id="viewList">
+    <div class="search"><input id="q" placeholder="会社名・職種・メモで検索"></div>
+    <div class="filters" id="filterRow"></div>
+    <div class="addrow"><button class="addbtn" id="btnAdd">＋ 追加</button></div>
+
+    <div class="form hide" id="form">
+      <h2 id="formTitle">NEW ENTRY</h2>
+      <div class="row">
+        <div class="f" style="flex:2 1 180px"><label>会社名</label><input id="fCompany" placeholder="例:JGコーポレーション"></div>
+        <div class="f"><label>職種/コース</label><input id="fRole" placeholder="例:コンサルタント"></div>
+      </div>
+      <div class="row">
+        <div class="f"><label>区分</label><select id="fKind"><option>インターン</option><option>本選考</option></select></div>
+        <div class="f"><label>締切日</label><input type="date" id="fDeadline"></div>
+        <div class="f"><label>次の予定日</label><input type="date" id="fNextDate"></div>
+      </div>
+      <div class="f" style="margin-bottom:10px"><label>この選考にあるフェーズ(タップで選択)</label>
+        <div class="phases" id="phaseToggles"></div>
+      </div>
+      <div class="row">
+        <div class="f" style="flex:2 1 180px"><label>マイページURL</label><input id="fUrl" type="url" placeholder="https://..."></div>
+        <div class="f"><label>マイページID</label><input id="fId" placeholder="例:メールアドレス"></div>
+      </div>
+      <div class="f" style="margin-bottom:10px"><label>メモ</label>
+        <textarea id="fMemo" placeholder="例:ES提出済。志望動機を面接用に短くする。"></textarea>
+      </div>
+      <button class="submit" id="btnSubmit">登録する</button>
+    </div>
+
+    <div id="alertSlot"></div>
+    <div class="cards" id="cards"></div>
+  </div>
+
+  <!-- ============ カレンダービュー ============ -->
+  <div id="viewCal" class="hide">
+    <div class="cal">
+      <div class="calhead">
+        <button class="calnav" id="calPrev">‹</button>
+        <div class="m" id="calMonth"></div>
+        <button class="calnav" id="calNext">›</button>
+      </div>
+      <div class="calgrid" id="calGrid"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--pink);display:inline-block"></i>締切</span>
+        <span><i class="dot" style="background:var(--neon);display:inline-block"></i>予定(面接など)</span>
+      </div>
+    </div>
+    <div class="daylist" id="dayList"></div>
+  </div>
+
+  <!-- ============ ツール ============ -->
+  <div class="tools">
+    <button class="tool" id="btnNotif">🔔 通知を有効にする</button>
+    <button class="tool" id="btnIcs">📅 カレンダーに書き出す</button>
+  </div>
+  <p class="note">
+    データはこの端末のブラウザ内にのみ保存されます。<br>
+    通知:アプリを開いた時に締切3日以内の案件をお知らせします(iPhoneはホーム画面に追加した状態で利用)。<br>
+    確実なリマインドには「カレンダーに書き出す」がおすすめ。締切と予定がアラーム付きでiPhone標準カレンダーに登録できます。
+  </p>
+</div>
+
+<script>
+"use strict";
+// ================= 状態 =================
+const KEY="shukatsu-data", NKEY="shukatsu-notified";
+const ALL_PHASES=["ES","Webテスト","GD","面接"];
+const OFFER="合格・内定", REJECT="不合格", WAIT="結果待ち";
+const STEP_COLORS={"ES作成中":"var(--amber)","ES提出済":"var(--teal)","Webテスト":"var(--blue)",
+  "GD":"var(--purple)","面接":"var(--orange)","結果待ち":"var(--sub)",
+  "合格・内定":"var(--neon)","不合格":"var(--gray)"};
+
+let mem={};
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return mem[k]||null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}
+
+// ---- フェーズ → ステップ列 ----
+function buildSteps(phases){
+  const s=[];
+  if(phases.includes("ES"))s.push("ES作成中","ES提出済");
+  ["Webテスト","GD","面接"].forEach(p=>{if(phases.includes(p))s.push(p)});
+  s.push(WAIT);
+  return s}
+
+// ---- 旧データ移行 ----
+function migrate(i){
+  if(!i.phases){
+    i.phases=ALL_PHASES.slice();
+    if(!i.nextDate)i.nextDate="";
+    const steps=buildSteps(i.phases);
+    if(![OFFER,REJECT].includes(i.status)&&!steps.includes(i.status))i.status=steps[0];
+  }
+  return i}
+let items=JSON.parse(lsGet(KEY)||"[]").map(migrate);
+
+let kindFilter="すべて", editId=null, formPhases=ALL_PHASES.slice();
+let calY,calM,selDate=null;
+const now=new Date(); calY=now.getFullYear(); calM=now.getMonth();
+
+function save(){lsSet(KEY,JSON.stringify(items))}
+function esc(s){return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function stepColor(s){return STEP_COLORS[s]||"var(--sub)"}
+function daysLeft(d){if(!d)return null;const t=new Date();t.setHours(0,0,0,0);
+  return Math.round((new Date(d+"T00:00:00")-t)/864e5)}
+function fmtMD(d){const x=new Date(d+"T00:00:00");return (x.getMonth()+1)+"/"+x.getDate()}
+function dueInfo(n){
+  if(n===null)return null;
+  if(n<0)return{t:"期限切れ",c:"var(--gray)"};
+  if(n===0)return{t:"今日",c:"var(--pink)"};
+  if(n<=3)return{t:"あと"+n+"日",c:"var(--pink)"};
+  if(n<=7)return{t:"あと"+n+"日",c:"var(--amber)"};
+  return{t:"あと"+n+"日",c:"var(--blue)"}}
+function isFin(i){return i.status===OFFER||i.status===REJECT}
+function progress(i){
+  if(i.status===OFFER)return 100;
+  const steps=buildSteps(i.phases);
+  const idx=Math.max(0,steps.indexOf(i.status));
+  return Math.round((idx)/(steps.length)*100)}
+
+// ================= フィルタ =================
+const FILTERS=["すべて","インターン","本選考","ES","Webテスト","GD","面接",WAIT,OFFER];
+function matchFilter(i){
+  if(kindFilter==="すべて")return true;
+  if(kindFilter==="インターン"||kindFilter==="本選考")return i.kind===kindFilter;
+  if(kindFilter==="ES")return i.status==="ES作成中"||i.status==="ES提出済";
+  return i.status===kindFilter}
+function renderFilters(){
+  document.getElementById("filterRow").innerHTML=FILTERS.map(f=>
+    `<button class="chip ${kindFilter===f?"on":""}" onclick="setFilter('${f}')">${f===OFFER?"合格/内定":f}</button>`).join("")}
+window.setFilter=f=>{kindFilter=f;renderFilters();renderCards()};
+
+// ================= 一覧描画 =================
+function renderStats(){
+  const act=items.filter(i=>!isFin(i));
+  const urg=act.filter(i=>{const n=daysLeft(i.deadline);return n!==null&&n>=0&&n<=3});
+  document.getElementById("stActive").textContent=act.length;
+  document.getElementById("stUrgent").textContent=urg.length;
+  document.getElementById("stOffer").textContent=items.filter(i=>i.status===OFFER).length;
+  const slot=document.getElementById("alertSlot");
+  const tops=urg.sort((a,b)=>daysLeft(a.deadline)-daysLeft(b.deadline)).slice(0,2);
+  slot.innerHTML=tops.map(top=>`<div class="alertbar"><span>${esc(top.company)} <span style="color:var(--sub)">/ ${esc(top.status)}</span></span><span class="due">${dueInfo(daysLeft(top.deadline)).t}</span></div>`).join("");
+}
+function renderCards(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const list=items
+    .filter(matchFilter)
+    .filter(i=>!q||[i.company,i.role,i.memo].join(" ").toLowerCase().includes(q))
+    .sort((a,b)=>{
+      const fa=isFin(a),fb=isFin(b);
+      if(fa!==fb)return fa?1:-1;
+      const na=daysLeft(a.deadline),nb=daysLeft(b.deadline);
+      if(na===null&&nb===null)return 0;if(na===null)return 1;if(nb===null)return -1;
+      return na-nb});
+  const el=document.getElementById("cards");
+  if(!list.length){el.innerHTML=`<div class="empty">該当する選考がありません。「＋ 追加」から登録しましょう。</div>`;return}
+  el.innerHTML=list.map((i,idx)=>{
+    const n=daysLeft(i.deadline),d=dueInfo(n);
+    const nn=daysLeft(i.nextDate),nd=dueInfo(nn);
+    const fin=isFin(i);
+    const urgent=!fin&&n!==null&&n>=0&&n<=3;
+    const cls="card"+(urgent?" urgent":"")+(i.status===OFFER?" offer":"")+(i.status===REJECT?" rejected":"");
+    const sc=stepColor(i.status);
+    const num=String(idx+1).padStart(2,"0");
+    const steps=buildSteps(i.phases);
+    const si=steps.indexOf(i.status);
+    const nextStep=si>=0&&si<steps.length-1?steps[si+1]:null;
+    const pct=progress(i);
+
+    // フェーズ操作ボタン
+    let ops="";
+    if(i.status===OFFER||i.status===REJECT){
+      ops=`<button class="miniop" onclick="goBack('${i.id}')">戻る</button>
+           <button class="miniop" onclick="startEdit('${i.id}')">編集</button>
+           <button class="miniop" style="margin-left:auto" onclick="removeItem('${i.id}')">削除</button>`;
+    }else if(i.status===WAIT){
+      ops=`<button class="bigoffer" onclick="setStep('${i.id}','${OFFER}')">🎉 合格・内定</button>
+           <button class="bigfail" onclick="setStep('${i.id}','${REJECT}')">不合格</button>
+           <button class="miniop" onclick="goBack('${i.id}')">戻る</button>
+           <button class="miniop" onclick="startEdit('${i.id}')">編集</button>`;
+    }else{
+      const failLabel=(i.status==="ES作成中"||i.status==="ES提出済")?"ES不合格":i.status+"不合格";
+      ops=`<button class="bignext" onclick="advance('${i.id}')">次へ: ${esc(nextStep)}</button>
+           <button class="bigfail" onclick="setStep('${i.id}','${REJECT}')">${failLabel}</button>
+           <button class="miniop" onclick="goBack('${i.id}')" ${si===0?"disabled style='opacity:.3'":""}>戻る</button>
+           <button class="miniop" onclick="startEdit('${i.id}')">編集</button>`;
+    }
+
+    return `<div class="${cls}">
+      <div class="cnum">${num} / ${esc(i.kind==="インターン"?"INTERN":"MAIN")}</div>
+      <div class="chead">
+        <div><div class="cname">${esc(i.company)}</div>
+        <div class="cmeta">${i.role?esc(i.role):"―"}</div></div>
+        <span class="badge" style="color:${sc};border-color:${sc}">${esc(i.status)}</span>
+      </div>
+      ${!fin?`<div class="prog">
+        <div class="proghead"><span class="l">次のステップへ</span><span class="p">${pct}%</span></div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+      </div>`:""}
+      <div class="twobox">
+        <div class="box"><div class="l">締切</div>
+          <div class="d" style="color:${d?d.c:"var(--sub)"}">${i.deadline?fmtMD(i.deadline):"未設定"}</div>
+          ${d&&!fin?`<span class="pill" style="color:${d.c};border-color:${d.c}">${d.t}</span>`:""}</div>
+        <div class="box"><div class="l">次の予定</div>
+          <div class="d" style="color:${nd&&!fin?nd.c:"var(--sub)"}">${i.nextDate?fmtMD(i.nextDate):"未設定"}</div>
+          ${nd&&!fin?`<span class="pill" style="color:${nd.c};border-color:${nd.c}">${nd.t}</span>`:""}</div>
+      </div>
+      ${(i.url||i.mpid)?`<div class="mypage"><span class="l">マイページ</span>
+        <span class="id">${i.mpid?esc(i.mpid):""}</span>
+        ${i.mpid?`<button onclick="copyId('${i.id}')">IDコピー</button>`:""}
+        ${i.url&&/^https?:\/\//.test(i.url)?`<a href="${esc(i.url)}" target="_blank" rel="noopener">開く ↗</a>`:""}
+      </div>`:""}
+      ${i.memo?`<div class="cmemo">${esc(i.memo)}</div>`:""}
+      <div class="cops">${ops}</div>
+    </div>`}).join("");
+}
+function renderAll(){renderStats();renderCards();renderCal()}
+
+// ================= フェーズ操作 =================
+window.advance=id=>{
+  const i=items.find(x=>x.id===id);if(!i)return;
+  const steps=buildSteps(i.phases);
+  const si=steps.indexOf(i.status);
+  if(si>=0&&si<steps.length-1){i.status=steps[si+1];save();renderAll()}};
+window.goBack=id=>{
+  const i=items.find(x=>x.id===id);if(!i)return;
+  const steps=buildSteps(i.phases);
+  if(isFin(i)){i.status=WAIT}
+  else{const si=steps.indexOf(i.status);if(si>0)i.status=steps[si-1]}
+  save();renderAll()};
+window.setStep=(id,s)=>{
+  const i=items.find(x=>x.id===id);if(i){i.status=s;save();renderAll()}};
+window.removeItem=id=>{if(confirm("削除しますか?")){items=items.filter(x=>x.id!==id);save();renderAll()}};
+window.copyId=async id=>{
+  const i=items.find(x=>x.id===id);if(!i||!i.mpid)return;
+  try{await navigator.clipboard.writeText(i.mpid);alert("IDをコピーしました")}
+  catch(e){prompt("コピーできない場合は手動で選択してください:",i.mpid)}};
+
+// ================= フォーム =================
+function renderPhaseToggles(){
+  document.getElementById("phaseToggles").innerHTML=ALL_PHASES.map(p=>
+    `<button type="button" class="phase ${formPhases.includes(p)?"on":""}" onclick="togglePhase('${p}')">${p}</button>`).join("")}
+window.togglePhase=p=>{
+  formPhases=formPhases.includes(p)?formPhases.filter(x=>x!==p):
+    ALL_PHASES.filter(x=>formPhases.includes(x)||x===p); // 正規順を維持
+  renderPhaseToggles()};
+
+window.startEdit=id=>{
+  const it=items.find(x=>x.id===id);if(!it)return;
+  editId=id;
+  fCompany.value=it.company;fRole.value=it.role||"";fKind.value=it.kind;
+  fDeadline.value=it.deadline||"";fNextDate.value=it.nextDate||"";fMemo.value=it.memo||"";
+  fUrl.value=it.url||"";fId.value=it.mpid||"";
+  formPhases=it.phases.slice();renderPhaseToggles();
+  document.getElementById("formTitle").textContent="EDIT ENTRY";
+  document.getElementById("btnSubmit").textContent="更新する";
+  document.getElementById("form").classList.remove("hide");
+  window.scrollTo({top:0,behavior:"smooth"})};
+
+document.getElementById("btnAdd").onclick=()=>{
+  editId=null;
+  ["fCompany","fRole","fMemo","fDeadline","fNextDate","fUrl","fId"].forEach(i=>document.getElementById(i).value="");
+  fKind.value="インターン";
+  formPhases=ALL_PHASES.slice();renderPhaseToggles();
+  document.getElementById("formTitle").textContent="NEW ENTRY";
+  document.getElementById("btnSubmit").textContent="登録する";
+  document.getElementById("form").classList.toggle("hide")};
+
+document.getElementById("btnSubmit").onclick=()=>{
+  const c=fCompany.value.trim();if(!c)return;
+  const data={company:c,role:fRole.value.trim(),kind:fKind.value,
+    deadline:fDeadline.value,nextDate:fNextDate.value,memo:fMemo.value.trim(),
+    url:fUrl.value.trim(),mpid:fId.value.trim(),
+    phases:formPhases.length?formPhases.slice():["ES"]};
+  if(editId){
+    const it=items.find(x=>x.id===editId);
+    Object.assign(it,data);
+    const steps=buildSteps(it.phases);
+    if(!isFin(it)&&!steps.includes(it.status))it.status=steps[0];
+  }else{
+    const steps=buildSteps(data.phases);
+    items.push(Object.assign({id:Date.now().toString(36),status:steps[0]},data));
+  }
+  save();document.getElementById("form").classList.add("hide");renderAll()};
+
+// ================= カレンダー =================
+function dateKey(y,m,d){return y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0")}
+function renderCal(){
+  document.getElementById("calMonth").textContent=calY+"."+String(calM+1).padStart(2,"0");
+  const first=new Date(calY,calM,1).getDay();
+  const days=new Date(calY,calM+1,0).getDate();
+  const prevDays=new Date(calY,calM,0).getDate();
+  const t=new Date();const tk=dateKey(t.getFullYear(),t.getMonth(),t.getDate());
+  let html=["SUN","MON","TUE","WED","THU","FRI","SAT"].map(d=>`<div class="dow">${d}</div>`).join("");
+  const cell=(y,m,d,dim)=>{
+    const k=dateKey(y,m,d);
+    let dots="";
+    items.forEach(i=>{
+      if(isFin(i))return;
+      if(i.deadline===k)dots+=`<span class="dot" style="background:var(--pink)"></span>`;
+      if(i.nextDate===k)dots+=`<span class="dot" style="background:var(--neon)"></span>`});
+    const cls="day"+(dim?" dim":"")+(k===tk?" today":"")+(k===selDate?" sel":"");
+    return `<button class="${cls}" onclick="selectDay('${k}')"><span>${d}</span><span class="dots">${dots}</span></button>`};
+  for(let i=first-1;i>=0;i--){const d=prevDays-i;const m=calM===0?11:calM-1;const y=calM===0?calY-1:calY;html+=cell(y,m,d,true)}
+  for(let d=1;d<=days;d++)html+=cell(calY,calM,d,false);
+  const total=first+days;const rest=(7-total%7)%7;
+  for(let d=1;d<=rest;d++){const m=calM===11?0:calM+1;const y=calM===11?calY+1:calY;html+=cell(y,m,d,true)}
+  document.getElementById("calGrid").innerHTML=html;
+  renderDayList()}
+window.selectDay=k=>{selDate=(selDate===k?null:k);renderCal()};
+function renderDayList(){
+  const el=document.getElementById("dayList");
+  if(!selDate){
+    const up=[];
+    items.forEach(i=>{
+      if(isFin(i))return;
+      if(i.deadline&&daysLeft(i.deadline)>=0)up.push({i,date:i.deadline,type:"締切"});
+      if(i.nextDate&&daysLeft(i.nextDate)>=0)up.push({i,date:i.nextDate,type:"予定"})});
+    up.sort((a,b)=>daysLeft(a.date)-daysLeft(b.date));
+    el.innerHTML=up.length?`<h3>UPCOMING</h3>`+up.slice(0,6).map(rowHtml).join(""):"";return}
+  const evs=[];
+  items.forEach(i=>{
+    if(i.deadline===selDate)evs.push({i,date:selDate,type:"締切"});
+    if(i.nextDate===selDate)evs.push({i,date:selDate,type:"予定"})});
+  el.innerHTML=`<h3>${fmtMD(selDate)}</h3>`+(evs.length?evs.map(rowHtml).join(""):`<div class="empty" style="padding:24px">この日の予定はありません</div>`)}
+function rowHtml(e){
+  const d=dueInfo(daysLeft(e.date));
+  const tc=e.type==="締切"?"var(--pink)":"var(--neon)";
+  return `<div class="card" style="margin-bottom:8px">
+    <div class="chead"><div><div class="cname" style="font-size:15px">${esc(e.i.company)}</div>
+    <div class="cmeta"><span style="color:${tc}">【${e.type}】</span>${fmtMD(e.date)} ・ ${esc(e.i.status)}</div></div>
+    ${d?`<span class="pill badge" style="color:${d.c};border-color:${d.c}">${d.t}</span>`:""}</div></div>`}
+
+document.getElementById("calPrev").onclick=()=>{calM--;if(calM<0){calM=11;calY--}renderCal()};
+document.getElementById("calNext").onclick=()=>{calM++;if(calM>11){calM=0;calY++}renderCal()};
+
+// ================= ビュー切替・検索 =================
+document.getElementById("tabList").onclick=()=>switchView("list");
+document.getElementById("tabCal").onclick=()=>switchView("cal");
+function switchView(v){
+  document.getElementById("viewList").classList.toggle("hide",v!=="list");
+  document.getElementById("viewCal").classList.toggle("hide",v!=="cal");
+  document.getElementById("tabList").classList.toggle("on",v==="list");
+  document.getElementById("tabCal").classList.toggle("on",v==="cal");
+  if(v==="cal")renderCal()}
+document.getElementById("q").addEventListener("input",renderCards);
+
+// ================= 通知 =================
+function notifyUrgent(){
+  if(!("Notification" in window)||Notification.permission!=="granted")return;
+  const seen=JSON.parse(lsGet(NKEY)||"{}");
+  const today=dateKey(now.getFullYear(),now.getMonth(),now.getDate());
+  items.forEach(i=>{
+    if(isFin(i))return;
+    [["deadline","締切"],["nextDate","予定"]].forEach(([f,label])=>{
+      const n=daysLeft(i[f]);
+      if(n===null||n<0||n>3)return;
+      const sig=i.id+"_"+f+"_"+today;
+      if(seen[sig])return;
+      seen[sig]=1;
+      new Notification("就活:"+label+"間近",{
+        body:`${i.company}(${i.status})― ${n===0?"今日です!":"あと"+n+"日"}`,
+        tag:i.id+f})});
+  });
+  lsSet(NKEY,JSON.stringify(seen))}
+document.getElementById("btnNotif").onclick=async()=>{
+  if(!("Notification" in window)){alert("この環境は通知に未対応です。iPhoneの場合は「ホーム画面に追加」してから開いてください(iOS16.4以降)。");return}
+  const p=await Notification.requestPermission();
+  if(p==="granted"){document.getElementById("btnNotif").textContent="🔔 通知:オン";notifyUrgent()}
+  else alert("通知が許可されませんでした。設定アプリから許可できます。")};
+setInterval(notifyUrgent,30*60*1000);
+
+// ================= ics書き出し =================
+document.getElementById("btnIcs").onclick=()=>{
+  const pad=n=>String(n).padStart(2,"0");
+  const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//SHUKATSU//JP","CALSCALE:GREGORIAN"];
+  let count=0;
+  items.forEach(i=>{
+    if(isFin(i))return;
+    [["deadline","【締切】"],["nextDate","【予定】"]].forEach(([f,label])=>{
+      if(!i[f]||daysLeft(i[f])<0)return;
+      count++;
+      const d=i[f].replace(/-/g,"");
+      const next=new Date(i[f]+"T00:00:00");next.setDate(next.getDate()+1);
+      const d2=next.getFullYear()+pad(next.getMonth()+1)+pad(next.getDate());
+      lines.push("BEGIN:VEVENT",
+        "UID:"+i.id+f+"@shukatsu",
+        "DTSTART;VALUE=DATE:"+d,
+        "DTEND;VALUE=DATE:"+d2,
+        "SUMMARY:"+label+i.company+" "+i.status,
+        "DESCRIPTION:"+(i.memo||""),
+        "BEGIN:VALARM","TRIGGER:-P1D","ACTION:DISPLAY","DESCRIPTION:明日:"+i.company,"END:VALARM",
+        "BEGIN:VALARM","TRIGGER:-PT3H","ACTION:DISPLAY","DESCRIPTION:本日:"+i.company,"END:VALARM",
+        "END:VEVENT")})});
+  if(!count){alert("書き出せる締切・予定がありません");return}
+  lines.push("END:VCALENDAR");
+  const blob=new Blob([lines.join("\r\n")],{type:"text/calendar"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download="shukatsu.ics";a.click();
+  URL.revokeObjectURL(a.href)};
+
+// ================= 初期化 =================
+document.getElementById("todayLabel").textContent=(now.getMonth()+1)+"."+String(now.getDate()).padStart(2,"0");
+if("Notification" in window&&Notification.permission==="granted"){
+  document.getElementById("btnNotif").textContent="🔔 通知:オン";notifyUrgent()}
+save();
+renderFilters();renderPhaseToggles();renderAll();
+</script>
+</body>
+</html>
